@@ -21,7 +21,7 @@ internal sealed class CheatPanel : SidePanel
         AddHead("锁定");
         AddCheck("无限残机", false, v => ch.InfiniteLives = v);
         AddCheck("无限符卡", false, v => ch.InfiniteBombs = v);
-        AddCheck("无限火力", false, v => ch.InfinitePower = v);
+        AddCheck("满火力", false, v => ch.InfinitePower = v);
         AddInlineNumber("火力值", ch.PowerValue, 0, 65535, v => ch.PowerValue = v);
         AddCheck("无敌 ", false, v => ch.Invincible = v);
         AddTip("本区会改写游戏内存, 其余功能仍是纯只读; 只在战斗中生效");

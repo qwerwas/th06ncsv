@@ -1,0 +1,74 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <PlatformTarget>x64</PlatformTarget>
+
+    <!--
+      ★ 名字分两套, 别混 (2026-10-06 第 7 条):
+
+        AssemblyName = TH06NCSV  →  产出的 exe / 任务栏 / 资源管理器 / 崩溃报告,
+                                  用户能看到的全是它
+     RootNamespace = TH06NCTools → C# 代码内部的命名空间
+
+      所以改名只需要动AssemblyName 这一行。**别去全局替换命名空间** ——
+      那是代码框架内部的事(类名/工程文件/源码结构), 一换就是上千行无意义改动,
+      而且用户根本看不见。
+    -->
+    <AssemblyName>TH06NCSV</AssemblyName>
+    <RootNamespace>TH06NCTools</RootNamespace>
+
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- ★ exe / 任务栏 / 资源管理器 / Alt+Tab 全部用这个图标 -->
+    <ApplicationIcon>Icon_128x128.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <!-- 工程目录里若残留旧的 obj / bin, 别让它们参与编译 (会撞出重复 AssemblyInfo) -->
+  <ItemGroup>
+    <Compile Remove="obj/**" />
+    <Compile Remove="bin/**" />
+  </ItemGroup>
+
+  <!--
+    ★ 图标 (2026-10-06)
+
+    ApplicationIcon 把 ico 编进 exe 的 RT_GROUP_ICON 资源, WinForms 再用它
+ 作为 Form 的默认图标(Form.Icon 为 null 时自动取程序集图标)。
+
+    ⚠️ **MSBuild 找不到 ico 时会静默跳过, 不报错** —— 表现为"改了没效果"。
+    所以两条铁律:
+      · Icon_128x128.ico 必须和本 csproj 同目录(上面用的是相对路径)
+      · 改完要确认 exe 上的图标真的换了 —— 跑 pe-tools/test_app_icon.py,
+    别靠肉眼看(资源管理器有缓存, 而且分辨不出图标细节差异)
+
+    换图标时: 覆盖这个文件即可, 不用改 csproj。
+  -->
+  <ItemGroup>
+    <None Include="Icon_128x128.ico" />
+  </ItemGroup>
+
+  <!--
+    ★ 发布版只有一个 exe, 没有"开发者模式" (2026-10-06)
+
+    之前试过两条路, 都已放弃:
+      1) 编译期双版本 (#if DEVMODE) —— #if 只包调用点不够, 方法体照样进 dll;
+         而且两份产物发布时要一起解释, 用户还得挑。
+      2) 运行时「开发者模式」按钮 —— 用户反馈"越做问题越多", 于是干脆把开发功能
+         (帧率调节 / 敌人闸门 / 激光宽度来源 / 道具占用判据 / 各种诊断按钮与日志)
+         **彻底删掉**, 交一个干净的发布版。
+
+    判据: **关掉它, 显示的东西会不会变成错的?**
+      会 → 写死成 const, 不做成可点的选项 (用户没有第二个"正确"选择);
+      不会(只是换种画法) → 才配当选项。
+
+    后续开发用备份的开发版:
+      C:\123\1Q2W3E\TH06NCTools   ← 开发版(带全部开发功能)
+      C:\123\TH06NCTools          ← 本发布版(TH06NCSV.exe)
+  -->
+
+</Project>
